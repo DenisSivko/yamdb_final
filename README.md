@@ -87,7 +87,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ##### Шаг 4. Скопируйте подготовленные файлы:
-Скопируйте подготовленные файлы `docker-compose.yaml` и `nginx/default.conf` из вашего проекта на сервер в home/<ваш_username>/docker-compose.yaml и home/<ваш_username>/nginx/default.conf соответственно.
+Скопируйте подготовленные файлы `docker-compose.yaml` и `nginx/default.conf` из вашего проекта на сервер в `home/<ваш_username>/docker-compose.yaml` и `home/<ваш_username>/nginx/default.conf` соответственно.
 Введите команду из корневой папки проекта:
 ```bash
 scp docker-compose.yml <username>@<host>:/home/<username>/docker-compose.yml
