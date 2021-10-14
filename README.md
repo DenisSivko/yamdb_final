@@ -1,6 +1,7 @@
 # Групповой проект «Yamdb»
-![workflow](https://github.com/DenisSivko/yamdb_final/actions/workflows/main.yml/badge.svg)
-## Описание
+![workflow](https://github.com/DenisSivko/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
+
+## Описание проекта
 Проект YaMDb собирает отзывы (Review) пользователей на произведения (Titles). Произведения делятся на категории: «Книги», «Фильмы», «Музыка». Список категорий (Category) может быть расширен (например, можно добавить категорию «Изобразительное искусство» или «Ювелирка»).
 
 Сами произведения в YaMDb не хранятся, здесь нельзя посмотреть фильм или послушать музыку.
@@ -47,24 +48,54 @@
 - Обновить информацию об объекте
 - Удалить произведение
 
-Документация к API доступна по адресу `http://127.0.0.1/redoc/`
+## Описание Workflow
+##### Workflow состоит из четырех шагов:
+###### tests
+- Проверка кода на соответствие PEP8, автоматический запуск тестов.
+###### Push Docker image to Docker Hub
+- Сборка и публикация образа на DockerHub.
+###### deploy 
+- Автоматический деплой на боевой сервер при пуше в главную ветку main.
+###### send_massage
+- Отправка уведомления в телеграм-чат.
 
-## Установка
-##### Шаг 1. Проверьте установлен ли у вас Docker
-Прежде, чем приступать к работе, необходимо знать, что Docker установлен. Для этого достаточно ввести:
+## Подготовка и запуск проекта
+##### Клонирование репозитория
+Склонируйте репозиторий на локальную машину:
 ```bash
-docker -v
+git clone https://github.com/DenisSivko/yamdb_final.git
 ```
-Или скачайте [Docker Desktop](https://www.docker.com/products/docker-desktop) для Mac или Windows. [Docker Compose](https://docs.docker.com/compose) будет установлен автоматически. В Linux убедитесь, что у вас установлена последняя версия [Compose](https://docs.docker.com/compose/install/). Также вы можете воспользоваться официальной [инструкцией](https://docs.docker.com/engine/install/).
 
-##### Шаг 2. Клонируйте репозиторий себе на компьютер
+## Установка на удаленном сервере (Ubuntu):
+##### Шаг 1. Выполните вход на свой удаленный сервер
+Прежде, чем приступать к работе, необходимо выполнить вход на свой удаленный сервер:
+```bash
+ssh <USERNAME>@<IP_ADDRESS>
+```
+
+##### Шаг 2. Установите docker на сервер:
 Введите команду:
 ```bash
-git clone https://github.com/DenisSivko/infra_sp2.git
+sudo apt install docker.io 
 ```
 
-##### Шаг 3. Создайте в клонированной директории файл .env
-Пример:
+##### Шаг 3. Установите docker-compose на сервер:
+Введите команды:
+```bash
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+##### Шаг 4. Скопируйте подготовленные файлы:
+Скопируйте подготовленные файлы `docker-compose.yaml` и `nginx/default.conf` из вашего проекта на сервер в home/<ваш_username>/docker-compose.yaml и home/<ваш_username>/nginx/default.conf соответственно.
+Введите команду из корневой папки проекта:
+```bash
+scp docker-compose.yml <username>@<host>:/home/<username>/docker-compose.yml
+scp -r nginx/ <username>@<host>:/home/<username>/
+```
+
+##### Шаг 5. Добавьте Secrets:
+Для работы с Workflow добавьте в Secrets GitHub переменные окружения для работы:
 ```bash
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=postgres
@@ -72,107 +103,18 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
+
+DOCKER_PASSWORD=<пароль DockerHub>
+DOCKER_USERNAME=<имя пользователя DockerHub>
+
+USER=<username для подключения к серверу>
+HOST=<IP сервера>
+PASSPHRASE=<пароль для сервера, если он установлен>
+SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.ssh/id_rsa)>
+
+TELEGRAM_TO=<ID своего телеграм-аккаунта>
+TELEGRAM_TOKEN=<токен вашего бота>
 ```
 
-##### Шаг 4. Запуск docker-compose
-Для запуска необходимо выполнить из директории с проектом команду:
-```bash
-docker-compose up -d
-```
-
-##### Шаг 5. База данных
-Создаем и применяем миграции:
-```bash
-docker-compose exec web python manage.py makemigrations --noinput
-docker-compose exec web python manage.py migrate --noinput
-```
-
-##### Шаг 6. Подгружаем статику
-Выполните команду:
-```bash
-docker-compose exec web python manage.py collectstatic --no-input 
-```
-
-##### Шаг 7. Заполнение базы тестовыми данными
-Для заполнения базы тестовыми данными вы можете использовать файл fixtures.json, который находится в infra_sp2. Выполните команду:
-```bash
-docker-compose exec web python manage.py loaddata fixtures.json
-```
-
-##### Другие команды
-Создание суперпользователя:
-```bash
-docker-compose exec web python manage.py createsuperuser
-```
-
-Остановить работу всех контейнеров можно командой:
-```bash
-docker-compose down
-```
-
-Для пересборки и запуска контейнеров воспользуйтесь командой:
-```bash
-docker-compose up -d --build 
-```
-
-Мониторинг запущенных контейнеров:
-```bash
-docker stats
-```
-
-Останавливаем и удаляем контейнеры, сети, тома и образы:
-```bash
-docker-compose down -v
-```
-
-## Примеры
-##### Получаем confirmation_code
-Для формирования запросов и ответов использована программа [Postman](https://www.postman.com/).
-
-Отправляем POST-запрос на адрес `http://127.0.0.1/api/v1/auth/email/` 
-
-- Обязательное поле: `email`
-
-```json
-POST   http://127.0.0.1/api/v1/auth/email/
-Content-Type: application/json
-
-{
-    "email": "<EMAIL>"
-}
-```
-
-Код подтверждения будет доступен по адресу `api_yamdb\sent_emails\file.log`
-
-##### Получаем token
-Отправляем POST-запрос для получения JWT-токена на адрес `http://127.0.0.1/api/v1/auth/token/`.
-- Обязательное поле: `email`,
-- Обязательное поле: `confirmation_code`
-```json
-POST   http://127.0.0.1/api/v1/auth/token/
-Content-Type: application/json
-
-{
-    "email": "<EMAIL>",
-    "confirmation_code": "<CONFIRMATION CODE>"
-}
-```
-##### Запрос для получения списка произведений
-Отправляем GET-запрос на адрес `http://127.0.0.1/api/v1/titles/`.
-```json
-GET http://127.0.0.1/api/v1/titles/
-Content-Type: application/json
-```
-##### Оставить отзыв
-Отправляем POST-запрос на адрес `http://127.0.0.1/api/v1/titles/1/reviews/`.
-Оценка произведения производится по 10-ти бальной шкале.
-```json
-POST http://127.0.0.1/api/v1/titles/1/reviews/
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjY0MDIyOTU2LCJqdGkiOiJhOThhNzY5ZjM3MjQ0OGI2YjNkZmU2ZWZhZTk3ZjQ5MyIsInVzZXJfaWQiOjN9.up2BFy3C_Yd3WrsiZLO3EQbZ5DZMqqmfAOXF0lrlIw0
-Content-Type: application/json
-
-{
-    "text": "<REVIEW TEXT>",
-    "score": <RATING>
-}
-```
+##### Проект запущен
+Проект будет доступен по вашему IP
