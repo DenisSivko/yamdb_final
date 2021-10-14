@@ -49,7 +49,7 @@
 - Удалить произведение
 
 ## Описание Workflow
-##### Workflow состоит из четырех шагов:
+##### Workflow состоит из четырёх шагов:
 ###### tests
 - Проверка кода на соответствие PEP8, автоматический запуск тестов.
 ###### Push Docker image to Docker Hub
@@ -116,5 +116,25 @@ TELEGRAM_TO=<ID своего телеграм-аккаунта>
 TELEGRAM_TOKEN=<токен вашего бота>
 ```
 
-##### Проект запущен
-Проект будет доступен по вашему IP
+##### Шаг 6. После успешного деплоя:
+Зайдите на боевой сервер и выполните команды (только после первого деплоя):
+###### Создаем и применяем миграции:
+```bash
+sudo docker-compose exec web python manage.py makemigrations --noinput
+sudo docker-compose exec web python manage.py migrate --noinput
+```
+###### Подгружаем статику
+```bash
+sudo docker-compose exec web python manage.py collectstatic --no-input 
+```
+###### Заполнить базу данных:
+```bash
+sudo docker-compose exec web python3 manage.py loaddata fixtures.json
+```
+###### Создать суперпользователя Django:
+```bash
+sudo docker-compose exec web python manage.py createsuperuser
+```
+
+##### Шаг 7. Проект запущен
+Проект будет доступен по вашему IP-адресу.
