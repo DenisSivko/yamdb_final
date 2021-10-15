@@ -138,3 +138,11 @@ sudo docker-compose exec web python manage.py createsuperuser
 
 ##### Шаг 7. Проект запущен
 Проект будет доступен по вашему IP-адресу.
+
+Проект доступен по адресу: http://62.84.122.112/api/v1/
+Образ на DockerHub: https://hub.docker.com/repository/docker/denissivko/yamdb_final
+
+## Авторы
+- [Denis Sivko](https://github.com/DenisSivko/) - студент курса Python-разработчик в Яндекс.Практикуме. 
+
+Список [разработчиков](https://github.com/DenisSivko/api_yamdb/graphs/contributors), которые приняли участие в проекте [Yamdb](https://github.com/DenisSivko/api_yamdb).
