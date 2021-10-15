@@ -140,6 +140,7 @@ sudo docker-compose exec web python manage.py createsuperuser
 Проект будет доступен по вашему IP-адресу.
 
 Проект доступен по адресу: http://62.84.122.112/api/v1/
+
 Образ на DockerHub: https://hub.docker.com/repository/docker/denissivko/yamdb_final
 
 ## Авторы
