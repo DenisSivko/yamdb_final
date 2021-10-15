@@ -97,6 +97,10 @@ scp -r nginx/ <username>@<host>:/home/<username>/
 ##### Шаг 5. Добавьте Secrets:
 Для работы с Workflow добавьте в Secrets GitHub переменные окружения для работы:
 ```bash
+SECRET_KEY=<SECRET_KEY>
+DEBUG=<True/False>
+ALLOWED_HOSTS=<hosts>
+
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=postgres
 POSTGRES_USER=postgres
